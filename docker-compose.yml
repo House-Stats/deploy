@@ -20,8 +20,9 @@ services:
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30 sales_ingest data_processor web_api update_checker
-
+    environment:
+      WATCHTOWER_NOTIFICATION_URL:
+    command: --interval 30
   # Sale ingest
   sales_ingest:
     image: ghcr.io/house-stats/sales-ingest:main
