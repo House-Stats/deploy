@@ -21,6 +21,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      GHCR_USER:
+      GHCR_PASS:
       WATCHTOWER_NOTIFICATION_URL:
     command: --interval 30
   # Sale ingest
