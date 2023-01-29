@@ -1,0 +1,98 @@
+version: "3.9" 
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - net
+
+  # Auto Update Containers
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 sales_ingest data_processor web_api update_checker
+
+  # Sale ingest
+  sales_ingest:
+    image: ghcr.io/house-stats/sales-ingest:main
+    restart: "always"
+    environment:
+      DBNAME: "house_data"
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_HOST:
+      KAFKA:
+      PYTHONUNBUFFERED: "1"
+    deploy:
+      mode: replicated
+      replicas: 4
+    networks:
+      - net
+
+  data_processor:
+    image: ghcr.io/house-stats/data-processor:main
+    restart: "always"
+    environment:
+      DBNAME: "house_data"
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_HOST:
+      KAFKA:
+      MONGO_HOST:
+      MONGO_USERNAME:
+      MONGO_PASSWORD:
+      PYTHONUNBUFFERED: "1"
+    deploy:
+      mode: replicated
+      replicas: 6
+    networks:
+      - net
+  
+  web_api:
+    image: ghcr.io/house-stats/web-api:main
+    restart: "always"
+    environment:
+      DBNAME: "house_data"
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_HOST:
+      KAFKA:
+      MONGO_HOST:
+      MONGO_USERNAME:
+      MONGO_PASSWORD:
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "9800-9810:8000"
+    deploy:
+      mode: replicated
+      replicas: 4
+    networks:
+      - net
+
+  update_checker:
+    image: ghcr.io/house-stats/update-check:main
+    restart: "always"
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_HOST:
+      KAFKA:
+      PYTHONUNBUFFERED: "1"
+    networks:
+      - net
+
+volumes:
+  pgadmin-data:
+
+networks:
+  net:
