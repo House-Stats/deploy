@@ -24,6 +24,7 @@ services:
     environment:
       WATCHTOWER_NOTIFICATION_URL:
     command: --interval 30 deploy-data_processor-1 deploy-data_processor-2 deploy-data_processor-3 deploy-data_processor-4 deploy-data_processor-5 deploy-data_processor-6 	deploy-sales_ingest-1 	deploy-sales_ingest-2 	deploy-sales_ingest-3 	deploy-sales_ingest-4 	deploy-update_checker-1 	deploy-web_api-1 	deploy-web_api-2 	deploy-web_api-3 	deploy-web_api-4 
+
   # Sale ingest
   sales_ingest:
     image: ghcr.io/house-stats/sales-ingest:main
@@ -41,25 +42,6 @@ services:
     networks:
       - net
 
-  data_processor:
-    image: ghcr.io/house-stats/data-processor:main
-    restart: "always"
-    environment:
-      DBNAME: "house_data"
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_HOST:
-      KAFKA:
-      MONGO_HOST:
-      MONGO_USERNAME:
-      MONGO_PASSWORD:
-      PYTHONUNBUFFERED: "1"
-    deploy:
-      mode: replicated
-      replicas: 6
-    networks:
-      - net
-  
   web_api:
     image: ghcr.io/house-stats/web-api:main
     restart: "always"
@@ -68,7 +50,6 @@ services:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
       POSTGRES_HOST:
-      KAFKA:
       MONGO_HOST:
       MONGO_USERNAME:
       MONGO_PASSWORD:
@@ -80,6 +61,32 @@ services:
       replicas: 4
     networks:
       - net
+    depends_on:
+      - worker
+
+  worker:
+    image: ghcr.io/house-stats/web-api:main
+    command: "celery --app=app.celery worker --loglevel=info --concurrency=4"
+    restart: "always"
+    environment:
+      DBNAME: "house_data"
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_HOST:
+      MONGO_HOST:
+      MONGO_USERNAME:
+      MONGO_PASSWORD:
+      CELERY_BROKER_URL:
+      CELERY_RESULT_BACKEND:
+      PYTHONUNBUFFERED: "1"
+    deploy:
+      mode: replicated
+      replicas: 4
+    networks:
+      - net
+    depends_on:
+      - rabbit_mq
+      - redis
 
   update_checker:
     image: ghcr.io/house-stats/update-check:main
@@ -93,8 +100,29 @@ services:
     networks:
       - net
 
+  rabbit_mq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER:
+      RABBITMQ_DEFAULT_PASS:
+    networks:
+      - net
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    command: redis-server --save 300 1
+    volumes: 
+      - cache:/data
+    networks:
+      - net
+
 volumes:
   pgadmin-data:
+  cache:
 
 networks:
   net:
