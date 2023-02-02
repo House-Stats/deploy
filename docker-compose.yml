@@ -23,7 +23,7 @@ services:
       - ./config.json:/config.json
     environment:
       WATCHTOWER_NOTIFICATION_URL:
-    command: --interval 30 deploy-data_processor-1 deploy-data_processor-2 deploy-data_processor-3 deploy-data_processor-4 deploy-data_processor-5 deploy-data_processor-6 	deploy-sales_ingest-1 	deploy-sales_ingest-2 	deploy-sales_ingest-3 	deploy-sales_ingest-4 	deploy-update_checker-1 	deploy-web_api-1 	deploy-web_api-2 	deploy-web_api-3 	deploy-web_api-4 
+    command: --interval 30 deploy-worker-1 deploy-worker-2 deploy-worker-3 deploy-worker-4 	deploy-sales_ingest-1 	deploy-sales_ingest-2 	deploy-sales_ingest-3 	deploy-sales_ingest-4 	deploy-update_checker-1 	deploy-web_api-1 	deploy-web_api-2 	deploy-web_api-3 	deploy-web_api-4 
 
   # Sale ingest
   sales_ingest:
