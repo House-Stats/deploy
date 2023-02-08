@@ -122,15 +122,11 @@ services:
     image: redis:latest
     ports:
       - '6379:6379'
-    command: redis-server --save 300 1
-    volumes: 
-      - cache:/data
     networks:
       - net
 
 volumes:
   pgadmin-data:
-  cache:
 
 networks:
   net:
