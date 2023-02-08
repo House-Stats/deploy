@@ -40,6 +40,7 @@ services:
     deploy:
       mode: replicated
       replicas: 4
+    cpus: 1
     networks:
       - net
 
@@ -57,6 +58,7 @@ services:
       CELERY_BROKER_URL:
       CELERY_RESULT_BACKEND:
       PYTHONUNBUFFERED: "1"
+      cpus: 2
     ports:
       - "9800-9810:8000"
     deploy:
@@ -72,6 +74,7 @@ services:
     entrypoint: celery
     command: "--app=app.celery worker --loglevel=info --concurrency=4"
     restart: "always"
+    cpus: 2
     environment:
       DBNAME: "house_data"
       POSTGRES_USER:
