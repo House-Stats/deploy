@@ -72,7 +72,7 @@ services:
   worker:
     image: ghcr.io/house-stats/web-api:main
     entrypoint: celery
-    command: "--app=app.celery worker --loglevel=info --concurrency=4"
+    command: "--app=app.celery worker --loglevel=info --concurrency=2"
     restart: "always"
     cpus: 2
     environment:
