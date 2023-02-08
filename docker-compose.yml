@@ -108,7 +108,7 @@ services:
       - net
 
   rabbit_mq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.8-management
     cpus: 2
     ports:
       - "15672:15672"
