@@ -72,9 +72,9 @@ services:
   worker:
     image: ghcr.io/house-stats/web-api:main
     entrypoint: celery
-    command: "--app=app.celery worker --loglevel=info --concurrency=2"
+    command: "--app=app.celery worker --loglevel=info --concurrency=8"
     restart: "always"
-    cpus: 2
+    cpus: 4
     environment:
       DBNAME: "house_data"
       POSTGRES_USER:
@@ -88,7 +88,7 @@ services:
       PYTHONUNBUFFERED: "1"
     deploy:
       mode: replicated
-      replicas: 4
+      replicas: 2
     networks:
       - net
     depends_on:
