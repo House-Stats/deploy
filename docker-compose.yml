@@ -14,18 +14,6 @@ services:
     networks:
       - net
 
-  # Auto Update Containers
-  watchtower:
-    image: containrrr/watchtower
-    restart: "always"
-    container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config.json:/config.json
-    environment:
-      WATCHTOWER_NOTIFICATION_URL:
-    command: --interval 30 deploy-worker-1 deploy-worker-2 deploy-worker-3 deploy-worker-4 	deploy-sales_ingest-1 	deploy-sales_ingest-2 	deploy-sales_ingest-3 	deploy-sales_ingest-4 	deploy-update_checker-1 	deploy-web_api-1 	deploy-web_api-2 	deploy-web_api-3 	deploy-web_api-4 
-
   # Sale ingest
   sales_ingest:
     image: ghcr.io/house-stats/sales-ingest:main
