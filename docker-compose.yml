@@ -1,31 +1,19 @@
 version: "3.9" 
 
 services:
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - net
-
   # Sale ingest
   sales_ingest:
     image: ghcr.io/house-stats/sales-ingest:main
     restart: "always"
     environment:
       DBNAME: "house_data"
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_HOST:
-      KAFKA:
       NODENAME: '{{.Node.Hostname}}'
       PYTHONUNBUFFERED: "1"
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - KAFKA
     deploy:
       mode: replicated
       replicas: 4
@@ -38,16 +26,17 @@ services:
     restart: "always"
     environment:
       DBNAME: "house_data"
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_HOST:
-      MONGO_HOST:
-      MONGO_USERNAME:
-      MONGO_PASSWORD:
-      CELERY_BROKER_URL:
-      CELERY_RESULT_BACKEND:
       PYTHONUNBUFFERED: "1"
-      cpus: 2
+    cpus: 2
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - MONGO_HOST
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - CELERY_BROKER_URL
+      - CELERY_RESULT_BACKEND
     ports:
       - "9800-9810:8000"
     deploy:
@@ -66,15 +55,16 @@ services:
     cpus: 4
     environment:
       DBNAME: "house_data"
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_HOST:
-      MONGO_HOST:
-      MONGO_USERNAME:
-      MONGO_PASSWORD:
-      CELERY_BROKER_URL:
-      CELERY_RESULT_BACKEND:
       PYTHONUNBUFFERED: "1"
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - MONGO_HOST
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - CELERY_BROKER_URL
+      - CELERY_RESULT_BACKEND
     deploy:
       mode: replicated
       replicas: 2
@@ -88,11 +78,12 @@ services:
     image: ghcr.io/house-stats/update-check:main
     restart: "always"
     environment:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_HOST:
-      KAFKA:
       PYTHONUNBUFFERED: "1"
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - KAFKA
     networks:
       - net
 
@@ -104,8 +95,11 @@ services:
       - "15672:15672"
       - "5672:5672"
     environment:
-      RABBITMQ_DEFAULT_USER:
-      RABBITMQ_DEFAULT_PASS:
+      RABBITMQ_DEFAULT_USER_FILE: /run/secrets/RABBITMQ_DEFAULT_USER
+      RABBITMQ_DEFAULT_PASS_FILE: /run/secrets/RABBITMQ_DEFAULT_PASS
+    secrets:
+      - RABBITMQ_DEFAULT_USER
+      - RABBITMQ_DEFAULT_PASS
     networks:
       - net
 
@@ -123,3 +117,29 @@ volumes:
 
 networks:
   net:
+
+secrets:
+  POSTGRES_USER:
+    external: true
+  POSTGRES_PASSWORD:
+    external: true
+  POSTGRES_HOST:
+    external: true
+  MONGO_HOST:
+    external: true
+  MONGO_USERNAME:
+    external: true
+  MONGO_PASSWORD:
+    external: true
+  CELERY_BROKER_URL:
+    external: true
+  CELERY_RESULT_BACKEND:
+    external: true
+  SECRET_KEY:
+    external: true
+  RABBITMQ_DEFAULT_USER:
+    external: true
+  RABBITMQ_DEFAULT_PASS:
+    external: true
+  KAFKA:
+    external: true
