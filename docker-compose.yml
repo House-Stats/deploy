@@ -17,7 +17,9 @@ services:
     deploy:
       mode: replicated
       replicas: 4
-    cpus: 1
+      resources:
+        limits:
+          cpus: 1
     networks:
       - net
 
@@ -27,7 +29,6 @@ services:
     environment:
       DBNAME: "house_data"
       PYTHONUNBUFFERED: "1"
-    cpus: 2
     secrets:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
@@ -42,6 +43,9 @@ services:
     deploy:
       mode: replicated
       replicas: 4
+      resources:
+        limits:
+          cpus: 2
     networks:
       - net
     depends_on:
@@ -52,7 +56,6 @@ services:
     entrypoint: celery
     command: "--app=app.celery worker --loglevel=info --concurrency=8"
     restart: "always"
-    cpus: 4
     environment:
       DBNAME: "house_data"
       PYTHONUNBUFFERED: "1"
@@ -68,6 +71,9 @@ services:
     deploy:
       mode: replicated
       replicas: 2
+      resources:
+        limits:
+          cpus: 4
     networks:
       - net
     depends_on:
