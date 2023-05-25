@@ -19,7 +19,7 @@ services:
       replicas: 4
       resources:
         limits:
-          cpus: 1
+          cpus: "1"
     networks:
       - net
 
@@ -45,7 +45,7 @@ services:
       replicas: 4
       resources:
         limits:
-          cpus: 2
+          cpus: "2"
     networks:
       - net
     depends_on:
@@ -73,7 +73,7 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: 4
+          cpus: "4"
     networks:
       - net
     depends_on:
@@ -95,7 +95,6 @@ services:
 
   rabbit_mq:
     image: rabbitmq:3.8-management
-    cpus: 2
     restart: "always"
     ports:
       - "15672:15672"
@@ -110,7 +109,6 @@ services:
       - net
 
   redis:
-    cpus: 2
     image: redis:latest
     restart: "always"
     ports:
