@@ -38,6 +38,7 @@ services:
       - MONGO_PASSWORD
       - CELERY_BROKER_URL
       - CELERY_RESULT_BACKEND
+      - SECRET_KEY
     ports:
       - "9800-9810:8000"
     deploy:
@@ -68,6 +69,7 @@ services:
       - MONGO_PASSWORD
       - CELERY_BROKER_URL
       - CELERY_RESULT_BACKEND
+      - SECRET_KEY
     deploy:
       mode: replicated
       replicas: 2
