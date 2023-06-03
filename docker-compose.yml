@@ -33,7 +33,7 @@ services:
   worker:
     image: ghcr.io/house-stats/web-api:main
     entrypoint: celery
-    command: "--app=app.celery worker --loglevel=info --concurrency=8"
+    command: "--app=app.celery worker --loglevel=info --concurrency=2 --without-heartbeat --without-gossip --without-mingle"
     restart: "always"
     environment:
       DBNAME: "house_data"
@@ -50,7 +50,7 @@ services:
       - SECRET_KEY
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 4
       resources:
         limits:
           cpus: "4"
