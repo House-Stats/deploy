@@ -33,7 +33,8 @@ services:
   worker:
     image: ghcr.io/house-stats/web-api:main
     entrypoint: celery
-    command: "--app=app.celery worker --loglevel=info --concurrency=2 --without-heartbeat --without-gossip --without-mingle"
+    command: "--app=app.celery worker --loglevel=info --concurrency=2 
+              --without-heartbeat --without-gossip --without-mingle -Ofair"
     restart: "always"
     environment:
       DBNAME: "house_data"
