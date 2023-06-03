@@ -60,7 +60,7 @@ services:
   flower:
     image: ghcr.io/house-stats/data-processor:main
     entrypoint: celery
-    command: "--app=app.celery flower --port=17567"
+    command: "--app=worker flower --port=17567"
     restart: "always"
     environment:
       DBNAME: "house_data"
