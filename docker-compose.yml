@@ -61,6 +61,33 @@ services:
       - rabbit_mq
       - redis
 
+  flower:
+    image: ghcr.io/house-stats/web-api:main
+    entrypoint: celery
+    command: "--app=app.celery worker --loglevel=info --concurrency=4
+              --without-heartbeat --without-gossip --without-mingle -Ofair flower --port=17567"
+    restart: "always"
+    environment:
+      DBNAME: "house_data"
+      PYTHONUNBUFFERED: "1"
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - MONGO_HOST
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - CELERY_BROKER_URL
+      - CELERY_RESULT_BACKEND
+      - SECRET_KEY
+    ports:
+      - "15445:17567"
+    networks:
+      - net
+    depends_on:
+      - rabbit_mq
+      - redis
+
   update_checker:
     image: ghcr.io/house-stats/update-check:main
     restart: "always"
