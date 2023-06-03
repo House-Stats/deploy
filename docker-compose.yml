@@ -64,8 +64,7 @@ services:
   flower:
     image: ghcr.io/house-stats/web-api:main
     entrypoint: celery
-    command: "--app=app.celery worker --loglevel=info --concurrency=4
-              --without-heartbeat --without-gossip --without-mingle -Ofair flower --port=17567"
+    command: "--app=app.celery flower --port=17567"
     restart: "always"
     environment:
       DBNAME: "house_data"
