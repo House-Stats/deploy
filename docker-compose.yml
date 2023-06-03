@@ -31,10 +31,7 @@ services:
       - worker
 
   worker:
-    image: ghcr.io/house-stats/web-api:main
-    entrypoint: celery
-    command: "--app=app.celery worker --loglevel=info --concurrency=4
-              --without-heartbeat --without-gossip --without-mingle -Ofair --task-events"
+    image: ghcr.io/house-stats/data-processor:main
     restart: "always"
     environment:
       DBNAME: "house_data"
@@ -48,7 +45,6 @@ services:
       - MONGO_PASSWORD
       - CELERY_BROKER_URL
       - CELERY_RESULT_BACKEND
-      - SECRET_KEY
     deploy:
       mode: replicated
       replicas: 4
@@ -62,7 +58,7 @@ services:
       - redis
 
   flower:
-    image: ghcr.io/house-stats/web-api:main
+    image: ghcr.io/house-stats/data-processor:main
     entrypoint: celery
     command: "--app=app.celery flower --port=17567"
     restart: "always"
@@ -78,7 +74,6 @@ services:
       - MONGO_PASSWORD
       - CELERY_BROKER_URL
       - CELERY_RESULT_BACKEND
-      - SECRET_KEY
     ports:
       - "15445:17567"
     networks:
