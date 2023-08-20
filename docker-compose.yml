@@ -82,6 +82,31 @@ services:
       - rabbit_mq
       - redis
 
+  beat:
+    image: ghcr.io/house-stats/data-processor:main
+    entrypoint: celery
+    command: "--app=worker beat"
+    restart: "always"
+    environment:
+      DBNAME: "house_data"
+      PYTHONUNBUFFERED: "1"
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_HOST
+      - MONGO_HOST
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - CELERY_BROKER_URL
+      - CELERY_RESULT_BACKEND
+    ports:
+      - "15445:17567"
+    networks:
+      - net
+    depends_on:
+      - rabbit_mq
+      - redis
+
   update_checker:
     image: ghcr.io/house-stats/update-check:main
     restart: "always"
